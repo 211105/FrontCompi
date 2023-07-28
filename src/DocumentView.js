@@ -57,27 +57,6 @@ const DocumentView = () => {
     }
   }, [isCommand2Executed, command3]);
 
-  const handleCommand = (e, command) => {
-    e.preventDefault();
-    // Actualizar el estado del código consumido
-    setInputCode(command);
-
-    axios.post('http://localhost:5000/command', { command })
-      .then((response) => {
-        if (response.data.message === "command executed") {
-          console.log(response.data.output);
-          setOutput(response.data.output);
-          // Marcar el "Command 1" como ejecutado
-          setIsCommand1Executed(true);
-        } else {
-          console.log('Error al enviar el Command 1:', response.data.message);
-        }
-      })
-      .catch((error) => {
-        console.log('Error al enviar el Command 1:', error);
-      });
-  };
-
   const handleCommand1 = (e) => {
     e.preventDefault();
     // Actualizar el estado del código consumido
@@ -97,6 +76,106 @@ const DocumentView = () => {
       .catch((error) => {
         console.log('Error al enviar el Command 1:', error);
       });
+
+    axios.post('http://localhost:5000/parse_code', { code: command1 })
+      .then((response) => {
+        console.log(response.data.result);
+        setLexico(response.data.result);
+        setTokens(JSON.stringify(response.data.tokens, null, 2));
+        setReservedInfo(JSON.stringify(response.data.reserved, null, 2));
+      })
+      .catch((error) => {
+        console.log('Error al enviar el comando:', error);
+      });
+
+    axios.post('http://localhost:5000/token_info', { code: command1 })
+      .then((response) => {
+        console.log(response.data);
+        setTokenInfo(JSON.stringify(response.data.tokens, null, 2));
+      })
+      .catch((error) => {
+        console.log('Error al obtener la información de los tokens:', error);
+      });
+  };
+
+  const handleCommand2 = (e) => {
+    e.preventDefault();
+    // Actualizar el estado del código consumido
+    setInputCode(command2);
+
+    axios.post('http://localhost:5000/command', { command: command2 })
+      .then((response) => {
+        if (response.data.message === "command executed") {
+          console.log(response.data.output);
+          setOutput(response.data.output);
+          // Marcar el "Command 2" como ejecutado
+          setIsCommand2Executed(true);
+        } else {
+          console.log('Error al enviar el Command 2:', response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log('Error al enviar el Command 2:', error);
+      });
+
+    axios.post('http://localhost:5000/parse_code', { code: command2 })
+      .then((response) => {
+        console.log(response.data.result);
+        setLexico(response.data.result);
+        setTokens(JSON.stringify(response.data.tokens, null, 2));
+        setReservedInfo(JSON.stringify(response.data.reserved, null, 2));
+      })
+      .catch((error) => {
+        console.log('Error al enviar el comando:', error);
+      });
+
+    axios.post('http://localhost:5000/token_info', { code: command2 })
+      .then((response) => {
+        console.log(response.data);
+        setTokenInfo(JSON.stringify(response.data.tokens, null, 2));
+      })
+      .catch((error) => {
+        console.log('Error al obtener la información de los tokens:', error);
+      });
+  };
+
+  const handleCommand3 = (e) => {
+    e.preventDefault();
+    // Actualizar el estado del código consumido
+    setInputCode(command3);
+
+    axios.post('http://localhost:5000/command', { command: command3 })
+      .then((response) => {
+        if (response.data.message === "command executed") {
+          console.log(response.data.output);
+          setOutput(response.data.output);
+        } else {
+          console.log('Error al enviar el Command 3:', response.data.message);
+        }
+      })
+      .catch((error) => {
+        console.log('Error al enviar el Command 3:', error);
+      });
+
+    axios.post('http://localhost:5000/parse_code', { code: command3 })
+      .then((response) => {
+        console.log(response.data.result);
+        setLexico(response.data.result);
+        setTokens(JSON.stringify(response.data.tokens, null, 2));
+        setReservedInfo(JSON.stringify(response.data.reserved, null, 2));
+      })
+      .catch((error) => {
+        console.log('Error al enviar el comando:', error);
+      });
+
+    axios.post('http://localhost:5000/token_info', { code: command3 })
+      .then((response) => {
+        console.log(response.data);
+        setTokenInfo(JSON.stringify(response.data.tokens, null, 2));
+      })
+      .catch((error) => {
+        console.log('Error al obtener la información de los tokens:', error);
+      });
   };
 
   return (
@@ -112,7 +191,9 @@ const DocumentView = () => {
                 onChange={(e) => setCommand1(e.target.value)}
                 value={command1}
               />
-              <button type="submit" className="btn btn-primary mt-3">Send</button>
+              <button type="submit" className="btn btn-primary mt-3">
+                Send
+              </button>
             </form>
           </div>
         </div>
@@ -121,7 +202,7 @@ const DocumentView = () => {
       <div className="container-fluid bg-color2">
         <div className="row">
           <div className="col-12 col-lg-6 mt-5">
-            <form onSubmit={(e) => handleCommand(e, command2)} disabled={!isCommand1Executed}>
+            <form onSubmit={handleCommand2} disabled={!isCommand1Executed}>
               <h4 className="sub-title">Command 2</h4>
               <input
                 type="text"
@@ -141,7 +222,7 @@ const DocumentView = () => {
       <div className="container-fluid bg-color2">
         <div className="row">
           <div className="col-12 col-lg-6 mt-5">
-            <form onSubmit={(e) => handleCommand(e, command3)} disabled={!isCommand2Executed}>
+            <form onSubmit={handleCommand3} disabled={!isCommand2Executed}>
               <h4 className="sub-title">Command 3</h4>
               <input
                 type="text"
@@ -163,14 +244,12 @@ const DocumentView = () => {
       <div className="container-fluid bg-color2">
         <div className="row">
           <div className="col-12 col-lg-6 mt-5">
-            <h4 className="sub-title">Resultado de Parseo</h4>
+            <h4 className="sub-title">Numeros encontrodos</h4>
             <textarea readOnly className="sub-input" value={lexico} />
             <h4 className="sub-title mt-5">Tokens</h4>
             <textarea readOnly className="sub-input" value={tokens} />
             <h4 className="sub-title mt-5">Información de Tokens</h4>
             <textarea readOnly className="sub-input" value={tokenInfo} />
-            <h4 className="sub-title mt-5">Palabras Reservadas</h4>
-            <textarea readOnly className="sub-input" value={reservedInfo} />
           </div>
         </div>
       </div>
